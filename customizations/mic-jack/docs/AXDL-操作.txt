@@ -1,0 +1,62 @@
+AXDL 单 KERNEL 安装步骤（仅在“① 检查并备份”成功后执行）
+
+目标：只把候选内核写入 kernel 分区 /dev/mmcblk0p14。
+包内 AXP 与内核已经在一台符合基线的 NanoKVM Pro 上完成刷写并正常启动。
+新机仍须先通过 Prepare；本次不会写 kernel_b，也不设置或保证自动回退槽。
+
+一、装驱动、打开工具
+1. 先断开 KVM 与本 Windows 电脑之间的 HID USB；核对配置期间保持断开。
+2. 在本包中文安装窗口点击“安装 AXERA 驱动”，由程序自动安装包内驱动。
+   若 Windows 询问管理员授权，按提示允许；等待安装窗口报告处理完成。
+   不需要查找 DriverSetup.exe 或手动输入命令，也不会自动重启电脑。
+   若提示 Windows 要求重启，安排重启后再继续刷写。
+   这是烧录电脑的 AXERA 下载驱动，被控 Windows 不需要安装麦克风专用驱动。
+3. 点击“② 打开 AXDL”，程序自动打开 AXDL、候选包文件夹和本说明。
+   工具位于 tools\AXDL_V1.24.22.1\Bin\AXDL.exe，不需要自己开 PowerShell 或输入命令。
+4. 点击左上角第一个圆点图标载入 AXP，选择：
+   candidate\REVIEW-candidate-kernel-A.axp
+   它在解压后的文件夹里，不在 AXDL 的 Settings 列表里。
+   保持原文件名；REVIEW 是此前审阅阶段留下的名称，不代表另有一个缺失文件。
+
+二、核对三类设置
+1. 点击齿轮，Settings 页应只有这五项，均勾选：
+   INIT、EIP、FDL1、FDL2、KERNEL。
+   其中 KERNEL 的 Address 应为 kernel，PartitionSize[Bytes] 为 0x4000000。
+   INIT/EIP/FDL1/FDL2 用于下载准备；唯一持久写入项是 KERNEL。
+2. Options 页：所有选项都保持未勾选，特别是 Repartition。
+   该工具可能把 Repartition 重新勾上；AXP 配置不能代替界面检查。
+3. Flash 页分别查看 ReadFlash、WriteFlash、EraseFlash：
+   列表全部为空；Active Read、Active Write、Active Erase、Erase All Flash 全部未勾选。
+4. 点 OK 保存，再打开齿轮复查 Options，确认 Repartition 确实未勾选。
+   每次关闭重开 AXDL、重新载包都要复查，不能只在第一次检查。
+5. 若显示 Sample50、文件路径为空、多出 ROOTFS/BOOT/DTB/KERNEL_B/ERASE 等项目，
+   说明载包或配置不对，先重新载入本包候选 AXP，切勿点击开始。
+   不要通过选其他分区、重分区或擦除来“修复”错误。
+
+三、进入下载模式并刷写
+1. 核对完成后，用数据线把 KVM 的 HID 接口接到这台运行 AXDL 的 Windows 电脑。
+2. AXDL 点击三角形 Start，工具进入等待下载状态；此时下一次正确进入下载模式会写内核。
+3. 按住 KVM 的 User/USR 按钮，再接通电源；已经通电时可按住 User/USR 并点按 Reset。
+   释放 Reset 后保持 User/USR，等待 AXDL 出现下载进度，再释放 User/USR。
+4. 下载开始后不要断电、拔线或改设置，等 KERNEL 行出现 Finish 和绿色 Passed。
+5. 设备管理器中可在“端口（COM 和 LPT）”下看到 AXERA U2S PORT（COM号不固定）。
+   端口可能短暂出现后消失；只看到端口不算刷写成功，以 AXDL 的最终结果为准。
+6. 成功后点方形 Stop，关闭 AXDL，避免接下一台时意外再次进入下载。
+
+四、正常冷启动
+1. 确认 AXDL 已报告 Passed 并已停止。
+2. 断开 KVM 全部供电，包括可能供电的 HID USB。
+3. 松开所有按键，再正常接通电源；不要按住 User/USR。
+4. 等待系统联网，回到 Start.cmd 打开的中文安装窗口，填写当前 IP，点击“③ 刷写后自动安装”。
+   统一安装器会核对运行中的候选内核及 jack 属性，确认后才安装运行时和网页。
+
+异常处理
+没有进度/端口：先停止 AXDL，再检查数据线、HID 接口、驱动和 User/Reset 操作。
+看到新磁盘但没有 AXDL 下载成功：不要用 Etcher、Rufus、dd 或 Windows 格式化磁盘。
+出现 Fail/异常退出：保留 AXDL 日志和截图，不要勾选重分区或擦除后重试。
+刷写 Passed 但不联网：先确认正常冷启动，不要假定 Passed 等于新机启动验证通过。
+后续恢复必须使用 Prepare 中备份的该台原始分区，不用其他机器的恢复包。
+
+按键进入 AXDL 下载模式参考 Sipeed 官方 NanoKVM Pro FAQ（2026-10-15 核对）：
+https://wiki.sipeed.com/hardware/zh/kvm/NanoKVM_Pro/faq.html
+本包为单分区方案；不要用官方整机 AXP 替换候选文件。

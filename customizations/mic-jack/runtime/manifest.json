@@ -1,0 +1,34 @@
+{
+  "package": "nanokvm-mic-runtime-20261015",
+  "setup_sha256": "407e5737b94b64f632776b60fcbbd23f62a83bb88bdeec5fd8c551af337087d0",
+  "source_usbdev_baseline_sha256": "db7a02d686e321f2a5f138118754fc602e68845347b49096767e10619f550e41",
+  "runtime_helper": "/dev/shm/kvmapp/scripts/mic-jack.sh",
+  "persistent_helper": "/kvmapp/scripts/mic-jack.sh",
+  "device_backup": "/root/nanokvm-mic-runtime-20261015",
+  "validation": {
+    "bash_n": "passed",
+    "independent_fixture_passed": 20,
+    "independent_fixture_total": 20,
+    "real_host_sysfs_stream_comparison": "passed",
+    "device_accessed": false,
+    "actual_vendor_usbdev_executed": false,
+    "installer_hardware_tested": false,
+    "windows_behavior_tested": false
+  },
+  "scope": [
+    "install saves original files and installs scripts without creating marker or restarting USB",
+    "activate creates marker and performs one explicit USB restart",
+    "rollback restores saved runtime files and performs one explicit USB restart",
+    "no kernel, partition, USB identity, or service restart changes"
+  ],
+  "files": {
+    "evidence/independent-review.zh-CN.txt": "bafda923fc740f32f5a2dabc577344bfa1359bec1834abfea09bb7031edfd2d8",
+    "evidence/local-checks.json": "d7b57cea2e988d2c2451a1770ea0e3e4b84bde3d2327b18a77fb7a2d1f6af97e",
+    "evidence/runtime-fixture-results.json": "55b7e6c7ae875542ea629e40a0cf4aa6d0c25d2c4a10b6c0874e35872aa5ac79",
+    "evidence/sysfs-stream-check.log": "5530a1234831cfa434e1a7843d86c38f1de5a6afba574e5445fad6a3b39b9ce9",
+    "payload/mic-jack.sh": "8789885534908087b8083a3bb206a626151be95ef0b437fc0a8a42f4956e3bc1",
+    "payload/usbdev.sh": "38a837323445e288197b40b6f465deb380a089885fc67e67d2211efa3e5f6098",
+    "README.zh-CN.txt": "fafd818be61b4609ceb9cecc7106525eff435d68032e2d9736bb634a9950a517",
+    "setup.sh": "407e5737b94b64f632776b60fcbbd23f62a83bb88bdeec5fd8c551af337087d0"
+  }
+}

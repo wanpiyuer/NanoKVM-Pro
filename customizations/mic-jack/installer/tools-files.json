@@ -1,0 +1,180 @@
+{
+  "schema": 1,
+  "files": [
+    {
+      "path": "AXDL_V1.24.22.1/Bin/7z.dll",
+      "bytes": 1141248,
+      "sha256": "db2897eeea65401ee1bd8feeebd0dbae8867a27ff4575f12b0b8a613444a5ef7"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/7zDll.dll",
+      "bytes": 41472,
+      "sha256": "7ac75a4a4786c9b723e1852357a4e6353c180fa4b79f74786b59fe547375c9d5"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/AXDL.exe",
+      "bytes": 4054528,
+      "sha256": "324a537bb51dbc3a533424f00a19d9b456e2f8abcac8710b4a7e757e95d48c4c"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/AXDL.ini",
+      "bytes": 4067,
+      "sha256": "9f0a9ab9d46470348c2a6fdea129b61a2c865855d775ad5a6a3bdff372670c1c"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/AxLog.dll",
+      "bytes": 58368,
+      "sha256": "1af4d514e1d391374f951c9bfa783620b22ceed1dda8749c35b45f3ebe961510"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/AxLog.ini",
+      "bytes": 1607,
+      "sha256": "a58856a5e6fdd2ca644126b3f0596e071a4bb5e2bd483c7077b48cc45aca9c73"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/Comm.dll",
+      "bytes": 254464,
+      "sha256": "ea89f65fb679c0f5a962c6eede21030bebd5ed84ec219a5ab671720526fbeafa"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/Comm.ini",
+      "bytes": 2080,
+      "sha256": "f64e8a3db97cd9365aa592e03666442d27f96d4aaa688c3341b0a1417b7cc8d9"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/config/Config20.xml",
+      "bytes": 5399,
+      "sha256": "612b7509317f15e87329e060b9cdb52f19dc8146300a06aa6e7eec470eec1e3c"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/config/Config50.xml",
+      "bytes": 5133,
+      "sha256": "02506b490468182211081f5d8fe57e5f8ae1c2c4dedf3c4ebb8fb29d3071ef7e"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/Config.xml",
+      "bytes": 5133,
+      "sha256": "02506b490468182211081f5d8fe57e5f8ae1c2c4dedf3c4ebb8fb29d3071ef7e"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/DLProtocol.dll",
+      "bytes": 276480,
+      "sha256": "8f1f2299e4d9a6a40967657974c91f2423cf545314c8cd6a8c9e5de622181624"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/Download.dll",
+      "bytes": 425472,
+      "sha256": "30df720547469e03d69f17ef60cf928c25d39a60cb1dff4d484f45befd9e1fba"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/Error.ini",
+      "bytes": 757,
+      "sha256": "7f8eea16c87daa473bcfee7352269d180a1b5a0bfdf6f4a9954725605995fab8"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/FileType.ini",
+      "bytes": 1857,
+      "sha256": "e47621fed8dac9a2e1e8cfc6b9e4be296ed95aa8a521b0debb579933c4b13570"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/Logo.bmp",
+      "bytes": 41456,
+      "sha256": "4bfc6d0bbafb90ed138723b9ea3b9da8a3a3a54ba4625c7c8aaf66311b87c37d"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/Bin/Timeout.ini",
+      "bytes": 614,
+      "sha256": "0a77e4b848150ef51281aa57861de6c24cd9c4c2b3bd8c77b8bea7670db914a7"
+    },
+    {
+      "path": "AXDL_V1.24.22.1/ReleaseNotes.xlsx",
+      "bytes": 49808,
+      "sha256": "591802fabc06f86bad8e820c588b9200cc13b6ade95c938d99cada7d60fdce9b"
+    },
+    {
+      "path": "Driver_V1.20.46.1/Driver_Release_Notes.xlsx",
+      "bytes": 26671,
+      "sha256": "fba7518e6818a198b300969528cb27fed9f6768cdadb56c2f6fa7dbc215f90b4"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Drivers/amd64/axeravcom.sys",
+      "bytes": 37416,
+      "sha256": "b75ce0a233c6462c9531cf5668e0b9c8dd0801cc4b37d8ae618174a35d5c0c47"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Drivers/amd64/WdfCoInstaller01009.dll",
+      "bytes": 1471280,
+      "sha256": "5d7e72540dfbbff8890225c8fc784609ae6607f0a3a76a2fa23a46f50ccbc9cb"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Drivers/amd64/winusbcoinstaller2.dll",
+      "bytes": 860464,
+      "sha256": "5cc0dbe18b5bbdc70804f5e582b6501050ff0a9c30eaf3c0edd5de9c55e88c21"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Drivers/axeravcom.cat",
+      "bytes": 12322,
+      "sha256": "9507a40296e6a26e06be85a5ecdeac33a3e30851e5da7e1719468d5b7d2334d7"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Drivers/axeravcom.inf",
+      "bytes": 3107,
+      "sha256": "29485104e51c8c72cceb5685edf62c74fc0cea5454ff63c586f0f379679c7b2e"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Drivers/i386/axeravcom.sys",
+      "bytes": 33832,
+      "sha256": "02e69d2bb1903445073fdc7f98af715e75bd5462b50d2b143f52d1ebe0de7d31"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Drivers/i386/WdfCoInstaller01009.dll",
+      "bytes": 1488288,
+      "sha256": "b3d57ca88066871d5c0ed6ef625104971e0571f03062402f8b9584ee7b684564"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Drivers/i386/winusbcoinstaller2.dll",
+      "bytes": 877472,
+      "sha256": "f83d2cd1cc5fd4a339130919f0f2c3e8ab0fa80f65dfb7e10774961b3e94d172"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/DriverSetup.exe",
+      "bytes": 323072,
+      "sha256": "c4f4472b74c9d597274c31b18ae103e030b7aa416d14835161a58731b6e5d687"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/DriverUninstall.exe",
+      "bytes": 322048,
+      "sha256": "78cff61155d82ce29c4df1f3faa994e243f36c673261b66caa86ea163713ac61"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Utils/config.reg",
+      "bytes": 276,
+      "sha256": "5b4cd9d95ad96ba6a8ec6d8037f99d564084002346423d2992ee0db1e30425dc"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Utils/dpinst.xml",
+      "bytes": 483,
+      "sha256": "86a38086aa6242e5e6669925c5a4ab1c04c0d0012b1be929268acc7b8a6977c9"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Utils/DPInst32.exe",
+      "bytes": 921992,
+      "sha256": "d84149976bc94a21b21aa0bc99fcbdee9d1ad4f3387d8b62b90f805ac300ba05"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Utils/DPInst64.exe",
+      "bytes": 1050104,
+      "sha256": "181bf85d3b5900ff8abed34bc415afc37fc322d9d7702e14d144f96a908f5cab"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Utils/DriverUninstall32.exe",
+      "bytes": 23552,
+      "sha256": "349cb043f76b9d6284d4a10edd9d7310fa78b877f5e8eeb3b76a83fabf343cf2"
+    },
+    {
+      "path": "Driver_V1.20.46.1/DriversForWin10/Utils/DriverUninstall64.exe",
+      "bytes": 28672,
+      "sha256": "564a1c954b9d3cdf44da2bbb1ec0edf10ace5222e9a32d52a9ee1e4d432781b6"
+    }
+  ]
+}

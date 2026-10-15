@@ -1,0 +1,14 @@
+[
+  {
+    "file": "AXDL_V1.24.22.1.7z",
+    "bytes": 2040733,
+    "sha256": "835fe3149c59e502e6a922f328d4352b9af08fb7a2f4388b5cd46d5a63a6f773",
+    "url": "https://dl.sipeed.com/fileList/MaixCAM/MaixCAM2/Software/Tools/AXDL_V1.24.22.1.7z"
+  },
+  {
+    "file": "Driver_V1.20.46.1.7z",
+    "bytes": 2773181,
+    "sha256": "5160ff28302ae7fd78bc37f8644cf8d2afc2c6f8f715f170075221826d4612a5",
+    "url": "https://dl.sipeed.com/fileList/MaixCAM/MaixCAM2/Software/Tools/Driver_V1.20.46.1.7z"
+  }
+]

@@ -1,0 +1,221 @@
+{
+  "schema": "nanokvm-mic-jack-source-lock-v1",
+  "date": "2026-10-15",
+  "scope": "Source-only overlay for the verified NanoKVM Pro app 1.2.15 baseline; generated assets and third-party binaries are external inputs.",
+  "upstream": {
+    "application": {
+      "repository": "https://github.com/sipeed/NanoKVM-Pro",
+      "release": "1.2.15",
+      "tag_commit": "8d0557b400e20d18590b780df3b7faddb2a5588c",
+      "binary_vcs_revision": "006b66a3c6ae5f5796562b027d4fda001411de3f",
+      "binary_vcs_modified": true
+    },
+    "kernel": {
+      "repository": "https://github.com/sipeed/maix_ax620e_sdk_kernel",
+      "commit": "94a7777d24781a1ca6671f937f55476a0d4e4181",
+      "subdirectory": "linux/linux-4.19.125"
+    },
+    "sdk": {
+      "repository": "https://github.com/sipeed/maix_ax620e_sdk",
+      "commit": "898eadc80d4284a104435dd305f6f268a2e76fe0"
+    },
+    "msp": {
+      "repository": "https://github.com/sipeed/maix_ax620e_sdk_msp",
+      "commit": "a3c9d11a13f9ee9d2af96f13c56fae058ad5bdbe"
+    }
+  },
+  "external_inputs": {
+    "official_application_archive": {
+      "url": "https://github.com/sipeed/NanoKVM-Pro/releases/download/1.2.15/nanokvm_pro_1.2.15.tar.gz",
+      "bytes": 19368453,
+      "sha256": "20a75e7a9573d3c57a12c5cf6340dceeedeb8690609c2e3644d0f6f16c443de7"
+    },
+    "official_application_deb": {
+      "archive_member": "nanokvm_pro_1.2.15/nanokvmpro_1.2.15_arm64.deb",
+      "bytes": 10783428,
+      "sha256": "eb7e46e99ce1f4457c66ca1c39650e09210c38e2ec72e8537fc9500db8b791b3"
+    },
+    "original_initramfs": {
+      "sha256": "d9e599eb40cb55c19cc5b3904f7015af554b74247da97498909b01195e526673",
+      "included": false,
+      "note": "Use an explicitly supplied, authorized source; no old-device archive or extracted initramfs is committed."
+    },
+    "axdl": {
+      "url": "https://dl.sipeed.com/fileList/MaixCAM/MaixCAM2/Software/Tools/AXDL_V1.24.22.1.7z",
+      "bytes": 2040733,
+      "sha256": "835fe3149c59e502e6a922f328d4352b9af08fb7a2f4388b5cd46d5a63a6f773"
+    },
+    "driver": {
+      "url": "https://dl.sipeed.com/fileList/MaixCAM/MaixCAM2/Software/Tools/Driver_V1.20.46.1.7z",
+      "bytes": 2773181,
+      "sha256": "5160ff28302ae7fd78bc37f8644cf8d2afc2c6f8f715f170075221826d4612a5"
+    }
+  },
+  "verified_release_artifacts_not_committed": {
+    "nanokvm-mic-runtime-20261015.tar.gz": "b0d6950a6f0a8b3a9257d1aa6993770192e4b6858ace6db00d98c8f3b63fedd5",
+    "nanokvm-mic-web-20261015.tar.gz": "52fd359134b08abc57ee613291206845b5985c30d9aee239bdbaf8c929c31e3d",
+    "REVIEW-candidate-kernel-A.axp": "1bce7d7397dd7f33bdc7e3baf64181d86439114fd956eaddb95df2df83b38d82",
+    "NanoKVM-Pro-Mic-Installer-20261015.zip": "4b89cbd376a345531e560c3c7da49f759dd86b7f6c40b827283c9b6a2763f2de"
+  },
+  "copied_files": [
+    {
+      "path": "kernel/patches/0001-uac2-jack-state.patch",
+      "source_path": "work/uac2-prototype-preaug/uac2-connector-state-candidate.patch",
+      "bytes": 17945,
+      "sha256": "69f8a45776c71b60f8b1f2832a7cbdb7dd4fb370ec3ae3cf6d7cc00c5de0c917"
+    },
+    {
+      "path": "kernel/baseline/f_uac2.c",
+      "source_path": "work/uac2-prototype-preaug/baseline/f_uac2.c",
+      "bytes": 39933,
+      "sha256": "eae9a68da6c1f145645fa1aebce059010d68773c4a8557bba0e5c3de70f72fb9"
+    },
+    {
+      "path": "kernel/baseline/u_uac2.h",
+      "source_path": "work/uac2-prototype-preaug/baseline/u_uac2.h",
+      "bytes": 1084,
+      "sha256": "217b4ddd6ccf0adb6ddf32e54ca97df004eaf5622bbae26fd08e2bac3cec54ca"
+    },
+    {
+      "path": "kernel/modified/f_uac2.c",
+      "source_path": "work/uac2-prototype-preaug/modified/f_uac2.c",
+      "bytes": 51031,
+      "sha256": "37ceb05170b356c13698ac9ae25efa64ef5fbc1ad566520b5d76f15b63875a25"
+    },
+    {
+      "path": "kernel/modified/u_uac2.h",
+      "source_path": "work/uac2-prototype-preaug/modified/u_uac2.h",
+      "bytes": 1257,
+      "sha256": "cb2682f60fad0748152cfdff0c8ddea1ea70310ac15719f0d966517f9ed1b62f"
+    },
+    {
+      "path": "kernel/configs/nanokvm-pro-4.19.125.config",
+      "source_path": "work/kernel-build/device.config",
+      "bytes": 124452,
+      "sha256": "2ae02b31927c46689bd8fae700cb1b14b411e32d6417e36927f42de083e69058"
+    },
+    {
+      "path": "runtime/setup.sh",
+      "source_path": "work/runtime-enable-20261015/nanokvm-mic-runtime-20261015/setup.sh",
+      "bytes": 21490,
+      "sha256": "407e5737b94b64f632776b60fcbbd23f62a83bb88bdeec5fd8c551af337087d0"
+    },
+    {
+      "path": "runtime/manifest.json",
+      "source_path": "work/runtime-enable-20261015/nanokvm-mic-runtime-20261015/manifest.json",
+      "bytes": 1919,
+      "sha256": "59857f4ff214a95f758c109835681eaa0cfb06b02ecbb7263718bc00020a6e87"
+    },
+    {
+      "path": "runtime/payload/usbdev.sh",
+      "source_path": "work/runtime-enable-20261015/nanokvm-mic-runtime-20261015/payload/usbdev.sh",
+      "bytes": 23663,
+      "sha256": "38a837323445e288197b40b6f465deb380a089885fc67e67d2211efa3e5f6098"
+    },
+    {
+      "path": "runtime/payload/mic-jack.sh",
+      "source_path": "work/runtime-enable-20261015/nanokvm-mic-runtime-20261015/payload/mic-jack.sh",
+      "bytes": 1875,
+      "sha256": "8789885534908087b8083a3bb206a626151be95ef0b437fc0a8a42f4956e3bc1"
+    },
+    {
+      "path": "web/controller/mic_lease.py",
+      "source_path": "work/mic-web-lease-20261015/mic_lease.py",
+      "bytes": 18763,
+      "sha256": "e171afaec3618859db98570a0be9878bb12729b970a6f756af2b54d2d8c4508c"
+    },
+    {
+      "path": "web/controller/mic-lease.sh",
+      "source_path": "work/mic-web-lease-20261015/mic-lease.sh",
+      "bytes": 164,
+      "sha256": "9089fb10baa4945b9657881d40cfcfd732fbc6527f9cec30f96a3b0e74b5248d"
+    },
+    {
+      "path": "web/client/mic-lease.ts",
+      "source_path": "work/mic-web-bridge-design/mic-lease.ts",
+      "bytes": 11190,
+      "sha256": "e76ed22efcee15c2269248a66c37c4a11e11eb77a56cc8e687c51d6a857dc6c8"
+    },
+    {
+      "path": "web/client/mic-lease.mjs",
+      "source_path": "work/mic-web-bridge-design/mic-lease.mjs",
+      "bytes": 11190,
+      "sha256": "7b8d8050892dcbd026944487e39f457a52689e473ffaa7f320191b6e754a62bd"
+    },
+    {
+      "path": "web/client/react-adapter.mjs",
+      "source_path": "work/mic-web-bridge-design/react-adapter.mjs",
+      "bytes": 4883,
+      "sha256": "6e4d0241d29a398648d05c2902465bb29beb942498a2b7a7c2cf0aec96398e40"
+    },
+    {
+      "path": "web/install/setup.py",
+      "source_path": "work/mic-web-install-20261015/setup.py",
+      "bytes": 30795,
+      "sha256": "19209c555b9e2041757df4ba65a932c6e08035df4119812109cb34a32fb2dead"
+    },
+    {
+      "path": "web/install/manifest.json",
+      "source_path": "work/mic-web-install-20261015/manifest.json",
+      "bytes": 4553,
+      "sha256": "ba1a1a04f73fd30b7c7e4b5851c5aeaf3ac1ccbdaaa4a2947632311497909374"
+    },
+    {
+      "path": "web/install/payload/mic_lease.py",
+      "source_path": "work/mic-web-install-20261015/payload/mic_lease.py",
+      "bytes": 18763,
+      "sha256": "e171afaec3618859db98570a0be9878bb12729b970a6f756af2b54d2d8c4508c"
+    },
+    {
+      "path": "web/install/payload/mic-lease.sh",
+      "source_path": "work/mic-web-install-20261015/payload/mic-lease.sh",
+      "bytes": 164,
+      "sha256": "9089fb10baa4945b9657881d40cfcfd732fbc6527f9cec30f96a3b0e74b5248d"
+    },
+    {
+      "path": "web/install/payload/nanokvm-mic-lease.service",
+      "source_path": "work/mic-web-install-20261015/payload/nanokvm-mic-lease.service",
+      "bytes": 559,
+      "sha256": "5c9adf8338710e5f1add29b5b0005ffca5294f60155f4cbace9d932dd107a674"
+    },
+    {
+      "path": "web/baseline/asset-anchor-manifest.json",
+      "source_path": "work/app-baseline-1.2.15/asset-anchor-manifest.json",
+      "bytes": 22486,
+      "sha256": "50dda86ce3a27f70c11573221839d8a55ac1c82835abd283eed8351c23ca48d6"
+    },
+    {
+      "path": "docs/00-开始.txt",
+      "source_path": "work/new-device-kit-20261015/docs/00-开始.txt",
+      "bytes": 7521,
+      "sha256": "d18e4139fa089395672757c5414e699a40f424609923f61bbad936fb0731c276"
+    },
+    {
+      "path": "docs/AXDL-操作.txt",
+      "source_path": "work/new-device-kit-20261015/docs/AXDL-操作.txt",
+      "bytes": 4538,
+      "sha256": "a780c4d5e4b7d56bfeeda5c8534b6f3e62b3fa1141b3f9a1fc3dc9df638c9161"
+    },
+    {
+      "path": "docs/更新与回退.txt",
+      "source_path": "work/new-device-kit-20261015/docs/更新与回退.txt",
+      "bytes": 4105,
+      "sha256": "7e984dbcc6664356c20db6d851bf3e44aee83ebbbe227ccba6080d3002b882db"
+    }
+  ],
+  "verification": {
+    "core_hardware_validated": true,
+    "hardware_scope": "One NanoKVM Pro; candidate boot, Windows endpoint/default switching, web on/off/on and sound confirmed by the operator on 2026-10-15.",
+    "new_combined_gui_installer_on_fresh_hardware_validated": false,
+    "source_overlay_rebuilt_and_installed_on_hardware": false
+  },
+  "adapted_sources": [
+    {
+      "path": "web/client/build-web-candidate.py",
+      "source_path": "work/mic-web-bridge-design/build-web-candidate.py",
+      "original_bytes": 7059,
+      "original_sha256": "e19879438d4102a5bbf340ebd0b60c7e08552120a3f4d70c0470d31dbd43bd0a",
+      "adaptation": "Portable CLI paths and output directory; current file integrity is recorded by the final source manifest."
+    }
+  ]
+}

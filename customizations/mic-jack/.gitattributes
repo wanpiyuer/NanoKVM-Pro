@@ -1,0 +1,6 @@
+# Release manifests and their input hashes require byte-preserving checkouts.
+# Keep the files diffable; disable only newline conversion, not text diffs.
+* -text whitespace=cr-at-eol
+# Unified-patch context and whitespace-preserving TS erasure are intentional.
+kernel/patches/*.patch -whitespace
+web/client/mic-lease.mjs -whitespace

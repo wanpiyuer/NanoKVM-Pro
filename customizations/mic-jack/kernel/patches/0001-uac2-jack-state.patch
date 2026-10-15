@@ -1,0 +1,607 @@
+diff --git a/drivers/usb/gadget/function/f_uac2.c b/drivers/usb/gadget/function/f_uac2.c
+--- a/drivers/usb/gadget/function/f_uac2.c
++++ b/drivers/usb/gadget/function/f_uac2.c
+@@ -10,6 +10,8 @@
+ #include <linux/usb/audio.h>
+ #include <linux/usb/audio-v2.h>
+ #include <linux/module.h>
++#include <linux/kref.h>
++#include <linux/spinlock.h>
+ 
+ #include "u_audio.h"
+ #include "u_uac2.h"
+@@ -51,10 +53,33 @@
+ #define EPOUT_EN(_opts) ((_opts)->c_chmask != 0)
+ // ### SIPEED EDIT END ###
+ 
++/*
++ * One bounded, coalescing notification request per bound function.  The owner
++ * and each successful queue hold a reference; completion never accesses the
++ * usb_function.  A late completion after a failed endpoint disable does not
++ * dereference f_uac2; this does not extend the lifetime of the UDC/usb_ep.
++ */
++struct uac2_jack_notify {
++	struct kref ref;
++	spinlock_t lock;
++	struct usb_ep *ep;
++	struct usb_request *req;
++	bool enabled;
++	bool busy;
++	bool pending;
++};
++
+ struct f_uac2 {
+ 	struct g_audio g_audio;
+ 	u8 ac_intf, as_in_intf, as_out_intf;
+ 	u8 ac_alt, as_in_alt, as_out_alt;	/* needed for get_alt() */
++	/* opts->lock protects list membership and the notify pointer. */
++	struct list_head jack_node;
++	struct uac2_jack_notify *jack_notify;
++	bool p_jack_detect;
++	bool p_jack_connected;
++	u8 p_it_id;
++	u32 p_chmask;
+ };
+ 
+ static inline struct f_uac2 *func_to_uac2(struct usb_function *f)
+@@ -66,6 +91,166 @@
+ struct f_uac2_opts *g_audio_to_uac2_opts(struct g_audio *agdev)
+ {
+ 	return container_of(agdev->func.fi, struct f_uac2_opts, func_inst);
++}
++
++static void uac2_jack_release(struct kref *ref)
++{
++	struct uac2_jack_notify *notify =
++		container_of(ref, struct uac2_jack_notify, ref);
++
++	kfree(notify->req->buf);
++	usb_ep_free_request(notify->ep, notify->req);
++	kfree(notify);
++}
++
++/* notify->lock held with IRQs disabled.  usb_ep_queue cannot call complete. */
++static int uac2_jack_queue_locked(struct uac2_jack_notify *notify)
++{
++	int ret;
++
++	if (!notify->enabled || notify->busy || !notify->pending)
++		return 0;
++
++	notify->busy = true;
++	notify->pending = false;
++	kref_get(&notify->ref);
++	ret = usb_ep_queue(notify->ep, notify->req, GFP_ATOMIC);
++	if (ret) {
++		notify->busy = false;
++		notify->pending = true;
++		/* The owner or the invoking completion still holds a reference. */
++		kref_put(&notify->ref, uac2_jack_release);
++	}
++	return ret;
++}
++
++static void uac2_jack_complete(struct usb_ep *ep, struct usb_request *req)
++{
++	struct uac2_jack_notify *notify = req->context;
++	unsigned long flags;
++	int ret = 0;
++
++	spin_lock_irqsave(&notify->lock, flags);
++	notify->busy = false;
++	if (req->status) {
++		/* No immediate error retry loop.  A write or set_alt retries. */
++		notify->pending = true;
++	} else {
++		ret = uac2_jack_queue_locked(notify);
++	}
++	spin_unlock_irqrestore(&notify->lock, flags);
++	if (ret)
++		pr_warn_ratelimited("uac2: connector notification queue: %d\n",
++				    ret);
++	kref_put(&notify->ref, uac2_jack_release);
++}
++
++static struct uac2_jack_notify *uac2_jack_alloc(struct usb_ep *ep,
++					      u8 terminal, u8 intf)
++{
++	struct uac2_jack_notify *notify;
++	struct uac2_interrupt_data_msg *msg;
++
++	notify = kzalloc(sizeof(*notify), GFP_KERNEL);
++	if (!notify)
++		return NULL;
++	notify->ep = ep;
++	notify->req = usb_ep_alloc_request(ep, GFP_KERNEL);
++	if (!notify->req)
++		goto err_notify;
++	msg = kzalloc(sizeof(*msg), GFP_KERNEL);
++	if (!msg)
++		goto err_request;
++
++	/* UAC2 6.1: standard interface notification, CUR has changed. */
++	msg->bInfo = 0;
++	msg->bAttribute = UAC2_CS_CUR;
++	msg->wValue = cpu_to_le16(UAC2_TE_CONNECTOR << 8);
++	msg->wIndex = cpu_to_le16((terminal << 8) | intf);
++	notify->req->buf = msg;
++	notify->req->length = sizeof(*msg);
++	notify->req->zero = 0;
++	notify->req->context = notify;
++	notify->req->complete = uac2_jack_complete;
++	notify->pending = true;
++	spin_lock_init(&notify->lock);
++	kref_init(&notify->ref);
++	return notify;
++
++err_request:
++	usb_ep_free_request(ep, notify->req);
++err_notify:
++	kfree(notify);
++	return NULL;
++}
++
++static int uac2_jack_stop(struct uac2_jack_notify *notify)
++{
++	unsigned long flags;
++	int ret;
++
++	if (!notify)
++		return 0;
++	/* Serialize with producers, but never hold this lock over disable. */
++	spin_lock_irqsave(&notify->lock, flags);
++	notify->enabled = false;
++	notify->pending = true;
++	spin_unlock_irqrestore(&notify->lock, flags);
++	/* On success the 4.19 gadget API drains all completion callbacks. */
++	ret = usb_ep_disable(notify->ep);
++	if (ret)
++		pr_err("uac2: connector endpoint disable failed: %d\n", ret);
++	return ret;
++}
++
++static int uac2_jack_start(struct usb_function *fn)
++{
++	struct uac2_jack_notify *notify = func_to_uac2(fn)->jack_notify;
++	unsigned long flags;
++	int ret;
++
++	if (!notify)
++		return 0;
++	ret = uac2_jack_stop(notify);
++	if (ret)
++		return ret;
++	ret = config_ep_by_speed(fn->config->cdev->gadget, fn, notify->ep);
++	if (ret)
++		return ret;
++	ret = usb_ep_enable(notify->ep);
++	if (ret)
++		return ret;
++
++	spin_lock_irqsave(&notify->lock, flags);
++	notify->enabled = true;
++	notify->pending = true;
++	ret = uac2_jack_queue_locked(notify);
++	spin_unlock_irqrestore(&notify->lock, flags);
++	if (ret)
++		uac2_jack_stop(notify);
++	return ret;
++}
++
++/* Called with opts->lock held, excluding unbind/free of this function. */
++static void uac2_jack_set_connected(struct f_uac2 *uac2, bool connected)
++{
++	struct uac2_jack_notify *notify = uac2->jack_notify;
++	bool changed = READ_ONCE(uac2->p_jack_connected) != connected;
++	unsigned long flags;
++	int ret;
++
++	WRITE_ONCE(uac2->p_jack_connected, connected);
++	if (!notify)
++		return;
++	spin_lock_irqsave(&notify->lock, flags);
++	if (changed)
++		notify->pending = true;
++	/* Rewriting the same value also retries a previously failed queue. */
++	ret = uac2_jack_queue_locked(notify);
++	spin_unlock_irqrestore(&notify->lock, flags);
++	if (ret)
++		pr_warn_ratelimited("uac2: connector notification queue: %d\n",
++				    ret);
+ }
+ 
+ /* --------- USB Function Interface ------------- */
+@@ -458,6 +643,40 @@
+ 	.wLockDelay = 0,
+ };
+ 
++/* Optional AudioControl interrupt IN endpoint, UAC2 6.1. */
++static struct usb_endpoint_descriptor fs_jack_ep_desc = {
++	.bLength = USB_DT_ENDPOINT_SIZE,
++	.bDescriptorType = USB_DT_ENDPOINT,
++	.bEndpointAddress = USB_DIR_IN,
++	.bmAttributes = USB_ENDPOINT_XFER_INT,
++	.wMaxPacketSize = cpu_to_le16(6),
++	.bInterval = 1,
++};
++
++static struct usb_endpoint_descriptor hs_jack_ep_desc = {
++	.bLength = USB_DT_ENDPOINT_SIZE,
++	.bDescriptorType = USB_DT_ENDPOINT,
++	.bEndpointAddress = USB_DIR_IN,
++	.bmAttributes = USB_ENDPOINT_XFER_INT,
++	.wMaxPacketSize = cpu_to_le16(6),
++	.bInterval = 4,
++};
++
++static struct usb_endpoint_descriptor ss_jack_ep_desc = {
++	.bLength = USB_DT_ENDPOINT_SIZE,
++	.bDescriptorType = USB_DT_ENDPOINT,
++	.bEndpointAddress = USB_DIR_IN,
++	.bmAttributes = USB_ENDPOINT_XFER_INT,
++	.wMaxPacketSize = cpu_to_le16(6),
++	.bInterval = 4,
++};
++
++static struct usb_ss_ep_comp_descriptor ss_jack_ep_comp = {
++	.bLength = sizeof(ss_jack_ep_comp),
++	.bDescriptorType = USB_DT_SS_ENDPOINT_COMP,
++	.wBytesPerInterval = cpu_to_le16(6),
++};
++
+ static struct usb_descriptor_header *fs_audio_desc[] = {
+ 	(struct usb_descriptor_header *)&iad_desc,
+ 	(struct usb_descriptor_header *)&std_ac_if_desc,
+@@ -469,6 +688,7 @@
+ 	(struct usb_descriptor_header *)&io_in_it_desc,
+ 	(struct usb_descriptor_header *)&usb_in_ot_desc,
+ 	(struct usb_descriptor_header *)&io_out_ot_desc,
++	(struct usb_descriptor_header *)&fs_jack_ep_desc,
+ 
+ 	(struct usb_descriptor_header *)&std_as_out_if0_desc,
+ 	(struct usb_descriptor_header *)&std_as_out_if1_desc,
+@@ -499,6 +719,7 @@
+ 	(struct usb_descriptor_header *)&io_in_it_desc,
+ 	(struct usb_descriptor_header *)&usb_in_ot_desc,
+ 	(struct usb_descriptor_header *)&io_out_ot_desc,
++	(struct usb_descriptor_header *)&hs_jack_ep_desc,
+ 
+ 	(struct usb_descriptor_header *)&std_as_out_if0_desc,
+ 	(struct usb_descriptor_header *)&std_as_out_if1_desc,
+@@ -530,6 +751,8 @@
+ 	(struct usb_descriptor_header *)&io_in_it_desc,
+ 	(struct usb_descriptor_header *)&usb_in_ot_desc,
+ 	(struct usb_descriptor_header *)&io_out_ot_desc,
++	(struct usb_descriptor_header *)&ss_jack_ep_desc,
++	(struct usb_descriptor_header *)&ss_jack_ep_comp,
+ 
+ 	(struct usb_descriptor_header *)&std_as_out_if0_desc,
+ 	(struct usb_descriptor_header *)&std_as_out_if1_desc,
+@@ -619,20 +842,24 @@
+ 	struct usb_ss_ep_comp_descriptor *epin_desc_comp = NULL;
+ 	struct usb_endpoint_descriptor *epout_desc;
+ 	struct usb_endpoint_descriptor *epin_desc;
++	struct usb_endpoint_descriptor *jack_ep_desc;
+ 	int i;
+ 
+ 	switch (speed) {
+ 	case USB_SPEED_FULL:
+ 		epout_desc = &fs_epout_desc;
+ 		epin_desc = &fs_epin_desc;
++		jack_ep_desc = &fs_jack_ep_desc;
+ 		break;
+ 	case USB_SPEED_HIGH:
+ 		epout_desc = &hs_epout_desc;
+ 		epin_desc = &hs_epin_desc;
++		jack_ep_desc = &hs_jack_ep_desc;
+ 		break;
+ 	default:
+ 		epout_desc = &ss_epout_desc;
+ 		epin_desc = &ss_epin_desc;
++		jack_ep_desc = &ss_jack_ep_desc;
+ 		epout_desc_comp = &ss_epout_desc_comp;
+ 		epin_desc_comp = &ss_epin_desc_comp;
+ 	}
+@@ -651,8 +878,15 @@
+ 		headers[i++] = USBDHDR(&io_in_it_desc);
+ 		headers[i++] = USBDHDR(&usb_in_ot_desc);
+ 	}
++	if (EPOUT_EN(opts))
++		headers[i++] = USBDHDR(&io_out_ot_desc);
++	/* The interrupt endpoint belongs to AC, before either AS interface. */
++	if (opts->p_jack_detect) {
++		headers[i++] = USBDHDR(jack_ep_desc);
++		if (speed == USB_SPEED_SUPER)
++			headers[i++] = USBDHDR(&ss_jack_ep_comp);
++	}
+ 	if (EPOUT_EN(opts)) {
+-		headers[i++] = USBDHDR(&io_out_ot_desc);
+ 		headers[i++] = USBDHDR(&std_as_out_if0_desc);
+ 		headers[i++] = USBDHDR(&std_as_out_if1_desc);
+ 		headers[i++] = USBDHDR(&as_out_hdr_desc);
+@@ -704,6 +938,10 @@
+ 	as_out_hdr_desc.bTerminalLink = usb_out_it_desc.bTerminalID;
+ 	as_in_hdr_desc.bTerminalLink = usb_in_ot_desc.bTerminalID;
+ 
++	/* Reset both fields on every bind, including detection-disabled binds. */
++	std_ac_if_desc.bNumEndpoints = opts->p_jack_detect ? 1 : 0;
++	io_in_it_desc.bmControls = cpu_to_le16((CONTROL_RDWR << COPY_CTRL) |
++		(opts->p_jack_detect ? CONTROL_RDONLY << CONN_CTRL : 0));
+ 	iad_desc.bInterfaceCount = 1;
+ 	ac_hdr_desc.wTotalLength = cpu_to_le16(sizeof(ac_hdr_desc));
+ 
+@@ -740,6 +978,10 @@
+ {
+ 	struct f_uac2_opts *opts = g_audio_to_uac2_opts(agdev);
+ 
++	if (opts->p_jack_detect && !EPIN_EN(opts)) {
++		dev_err(dev, "Error: jack detection needs USB IN channels\n");
++		return -EINVAL;
++	}
+ 	if (!opts->p_chmask && !opts->c_chmask) {
+ 		dev_err(dev, "Error: no playback and capture channels\n");
+ 		return -EINVAL;
+@@ -779,6 +1021,8 @@
+ 	struct f_uac2_opts *uac2_opts = g_audio_to_uac2_opts(agdev);
+ 	// ### SIPEED EDIT END ###
+ 	struct usb_string *us;
++	struct usb_ep *jack_ep = NULL;
++	struct uac2_jack_notify *notify = NULL;
+ 	int ret;
+ 
+ 	// ### SIPEED EDIT ###
+@@ -935,13 +1179,29 @@
+ 	ss_epout_desc.bEndpointAddress = fs_epout_desc.bEndpointAddress;
+ 	ss_epin_desc.bEndpointAddress = fs_epin_desc.bEndpointAddress;
+ 
++	/* Allocate last so existing audio endpoint selection stays unchanged. */
++	if (uac2_opts->p_jack_detect) {
++		fs_jack_ep_desc.bEndpointAddress = USB_DIR_IN;
++		jack_ep = usb_ep_autoconfig(gadget, &fs_jack_ep_desc);
++		if (!jack_ep)
++			return -ENODEV;
++		hs_jack_ep_desc.bEndpointAddress = fs_jack_ep_desc.bEndpointAddress;
++		ss_jack_ep_desc.bEndpointAddress = fs_jack_ep_desc.bEndpointAddress;
++	}
+ 	setup_descriptor(uac2_opts);
++	/* Never use the mutable global descriptor for run-time entity routing. */
++	uac2->p_it_id = io_in_it_desc.bTerminalID;
++	if (jack_ep) {
++		notify = uac2_jack_alloc(jack_ep, uac2->p_it_id, uac2->ac_intf);
++		if (!notify)
++			return -ENOMEM;
++	}
+ 
+ 	ret = usb_assign_descriptors(fn, fs_audio_desc, hs_audio_desc, ss_audio_desc,
+ 				     ss_audio_desc);
+ 	// ### SIPEED EDIT END ###
+ 	if (ret)
+-		return ret;
++		goto err_free_notify;
+ 
+ 	agdev->gadget = gadget;
+ 
+@@ -955,11 +1215,17 @@
+ 	ret = g_audio_setup(agdev, "UAC2 PCM", "UAC2_Gadget");
+ 	if (ret)
+ 		goto err_free_descs;
++	mutex_lock(&uac2_opts->lock);
++	uac2->jack_notify = notify;
++	mutex_unlock(&uac2_opts->lock);
+ 	return 0;
+ 
+ err_free_descs:
+ 	usb_free_all_descriptors(fn);
+ 	agdev->gadget = NULL;
++err_free_notify:
++	if (notify)
++		kref_put(&notify->ref, uac2_jack_release);
+ 	return ret;
+ }
+ 
+@@ -984,7 +1250,7 @@
+ 			dev_err(dev, "%s:%d Error!\n", __func__, __LINE__);
+ 			return -EINVAL;
+ 		}
+-		return 0;
++		return uac2_jack_start(fn);
+ 	}
+ 
+ 	if (intf == uac2->as_out_intf) {
+@@ -1036,6 +1302,7 @@
+ 
+ 	uac2->as_in_alt = 0;
+ 	uac2->as_out_alt = 0;
++	uac2_jack_stop(uac2->jack_notify);
+ 	u_audio_stop_capture(&uac2->g_audio);
+ 	u_audio_stop_playback(&uac2->g_audio);
+ }
+@@ -1044,6 +1311,7 @@
+ in_rq_cur(struct usb_function *fn, const struct usb_ctrlrequest *cr)
+ {
+ 	struct usb_request *req = fn->config->cdev->req;
++	struct f_uac2 *uac2 = func_to_uac2(fn);
+ 	struct g_audio *agdev = func_to_g_audio(fn);
+ 	struct f_uac2_opts *opts;
+ 	u16 w_length = le16_to_cpu(cr->wLength);
+@@ -1053,6 +1321,21 @@
+ 	u8 control_selector = w_value >> 8;
+ 	int value = -EOPNOTSUPP;
+ 	int p_srate, c_srate;
++
++	/* Connector uses the terminal entity, not the clock-valid selector. */
++	if (uac2->p_jack_detect && entity_id == uac2->p_it_id) {
++		struct uac2_connectors_ctl_blk connector = { 0 };
++
++		if (control_selector != UAC2_TE_CONNECTOR || (w_value & 0xff))
++			return -EOPNOTSUPP;
++		if (READ_ONCE(uac2->p_jack_connected)) {
++			connector.bNrChannels = num_channels(uac2->p_chmask);
++			connector.bmChannelConfig = cpu_to_le32(uac2->p_chmask);
++		}
++		value = min_t(unsigned int, w_length, sizeof(connector));
++		memcpy(req->buf, &connector, value);
++		return value;
++	}
+ 
+ 	opts = g_audio_to_uac2_opts(agdev);
+ 	p_srate = opts->p_srate;
+@@ -1314,7 +1597,83 @@
+ UAC2_ATTRIBUTE(c_terminal_type);
+ // ### SIPEED EDIT END ###
+ 
++/* Descriptor capability: configure before linking this function. */
++static ssize_t f_uac2_opts_p_jack_detect_show(struct config_item *item,
++					   char *page)
++{
++	struct f_uac2_opts *opts = to_f_uac2_opts(item);
++	int ret;
++
++	mutex_lock(&opts->lock);
++	ret = sprintf(page, "%u\n", opts->p_jack_detect);
++	mutex_unlock(&opts->lock);
++	return ret;
++}
++
++static ssize_t f_uac2_opts_p_jack_detect_store(struct config_item *item,
++					    const char *page, size_t len)
++{
++	struct f_uac2_opts *opts = to_f_uac2_opts(item);
++	bool enabled;
++	int ret;
++
++	ret = kstrtobool(page, &enabled);
++	if (ret)
++		return ret;
++	mutex_lock(&opts->lock);
++	if (opts->refcnt) {
++		ret = -EBUSY;
++	} else {
++		opts->p_jack_detect = enabled;
++		ret = len;
++	}
++	mutex_unlock(&opts->lock);
++	return ret;
++}
++CONFIGFS_ATTR(f_uac2_opts_, p_jack_detect);
++
++static ssize_t f_uac2_opts_p_jack_connected_show(struct config_item *item,
++					      char *page)
++{
++	struct f_uac2_opts *opts = to_f_uac2_opts(item);
++	int ret;
++
++	mutex_lock(&opts->lock);
++	ret = sprintf(page, "%u\n", opts->p_jack_connected);
++	mutex_unlock(&opts->lock);
++	return ret;
++}
++
++static ssize_t f_uac2_opts_p_jack_connected_store(struct config_item *item,
++					       const char *page, size_t len)
++{
++	struct f_uac2_opts *opts = to_f_uac2_opts(item);
++	struct f_uac2 *uac2;
++	bool connected;
++	int ret;
++
++	ret = kstrtobool(page, &connected);
++	if (ret)
++		return ret;
++	mutex_lock(&opts->lock);
++	if (!opts->p_jack_detect) {
++		ret = -EOPNOTSUPP;
++		goto out;
++	}
++	opts->p_jack_connected = connected;
++	list_for_each_entry(uac2, &opts->jack_functions, jack_node)
++		uac2_jack_set_connected(uac2, connected);
++	/* The accepted state is authoritative; notification errors are logged. */
++	ret = len;
++out:
++	mutex_unlock(&opts->lock);
++	return ret;
++}
++CONFIGFS_ATTR(f_uac2_opts_, p_jack_connected);
++
+ static struct configfs_attribute *f_uac2_attrs[] = {
++	&f_uac2_opts_attr_p_jack_detect,
++	&f_uac2_opts_attr_p_jack_connected,
+ 	&f_uac2_opts_attr_p_chmask,
+ 	&f_uac2_opts_attr_p_srate,
+ 	&f_uac2_opts_attr_p_ssize,
+@@ -1353,6 +1712,9 @@
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	mutex_init(&opts->lock);
++	INIT_LIST_HEAD(&opts->jack_functions);
++	opts->p_jack_detect = false;
++	opts->p_jack_connected = true;
+ 	opts->func_inst.free_func_inst = afunc_free_inst;
+ 
+ 	config_group_init_type_name(&opts->func_inst.group, "",
+@@ -1382,16 +1744,29 @@
+ 
+ 	agdev = func_to_g_audio(f);
+ 	opts = container_of(f->fi, struct f_uac2_opts, func_inst);
+-	kfree(agdev);
+ 	mutex_lock(&opts->lock);
++	list_del(&func_to_uac2(f)->jack_node);
+ 	--opts->refcnt;
+ 	mutex_unlock(&opts->lock);
++	kfree(agdev);
+ }
+ 
+ static void afunc_unbind(struct usb_configuration *c, struct usb_function *f)
+ {
+ 	struct g_audio *agdev = func_to_g_audio(f);
+-
++	struct f_uac2 *uac2 = func_to_uac2(f);
++	struct f_uac2_opts *opts = g_audio_to_uac2_opts(agdev);
++	struct uac2_jack_notify *notify;
++
++	mutex_lock(&opts->lock);
++	notify = uac2->jack_notify;
++	uac2->jack_notify = NULL;
++	mutex_unlock(&opts->lock);
++	if (notify) {
++		uac2_jack_stop(notify);
++		/* A failed UDC disable leaves any queued request holding a ref. */
++		kref_put(&notify->ref, uac2_jack_release);
++	}
+ 	g_audio_cleanup(agdev);
+ 	usb_free_all_descriptors(f);
+ 
+@@ -1409,6 +1784,10 @@
+ 
+ 	opts = container_of(fi, struct f_uac2_opts, func_inst);
+ 	mutex_lock(&opts->lock);
++	uac2->p_jack_detect = opts->p_jack_detect;
++	uac2->p_jack_connected = opts->p_jack_connected;
++	uac2->p_chmask = opts->p_chmask;
++	list_add_tail(&uac2->jack_node, &opts->jack_functions);
+ 	++opts->refcnt;
+ 	mutex_unlock(&opts->lock);
+ 
+diff --git a/drivers/usb/gadget/function/u_uac2.h b/drivers/usb/gadget/function/u_uac2.h
+--- a/drivers/usb/gadget/function/u_uac2.h
++++ b/drivers/usb/gadget/function/u_uac2.h
+@@ -14,6 +14,7 @@
+ #define U_UAC2_H
+ 
+ #include <linux/usb/composite.h>
++#include <linux/list.h>
+ 
+ #define UAC2_DEF_PCHMASK 0x3
+ #define UAC2_DEF_PSRATE 48000
+@@ -40,6 +41,10 @@
+ 	int				c_ssize;
+ 	int				req_number;
+ 	bool				bound;
++	/* p_ is gadget ALSA playback -> USB IN -> host recording. */
++	bool				p_jack_detect;
++	bool				p_jack_connected;
++	struct list_head		jack_functions;
+ 
+ 	// ### SIPEED EDIT ###
+ 	char			function_name[32];

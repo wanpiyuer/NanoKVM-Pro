@@ -1,0 +1,24 @@
+[Unit]
+Description=NanoKVM microphone jack lease
+After=nanokvm.service
+Requisite=nanokvm.service
+PartOf=nanokvm.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=root
+Group=root
+UMask=0077
+RuntimeDirectory=nanokvm-mic-lease
+RuntimeDirectoryMode=0700
+ExecStart=/usr/bin/python3 -I -u /kvmapp/scripts/mic-web-lease/mic_lease.py serve
+ExecStopPost=/usr/bin/python3 -I /kvmapp/scripts/mic-web-lease/mic_lease.py failsafe-off
+Restart=on-failure
+RestartSec=1
+TimeoutStopSec=3
+KillMode=control-group
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=nanokvm.service

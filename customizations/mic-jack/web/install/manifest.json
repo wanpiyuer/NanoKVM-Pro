@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "release_id": "nanokvm-mic-web-20261015",
+  "expected": {
+    "app_version": "1.2.15",
+    "server_sha256": "b8d8a69ee9ad9db8a5b0a6852b00f0df70008b65b84f35f02cf7e69067ba0502",
+    "runtime_helper_sha256": "8789885534908087b8083a3bb206a626151be95ef0b437fc0a8a42f4956e3bc1",
+    "web_baseline": {
+      "index.html": "ffb6906ff66b5ae1558980b4bafb1f8231284eb69c7fe37cbe27d7e91ddf56ec",
+      "assets/auth-BowKsku-.js": "97ba7711c4a479061cdeaad84da10ae20cce1c1dcafa0774ffd38ddfb5d57fd8",
+      "assets/direct.worker-_50jbC9e.js": "c2fada1998e8e1160aade043a0b013f23b21707402297fc108abb9ed9cb87c5f",
+      "assets/head-BTGMInA4.js": "d78e589d0f0634a22cd60eaeb72bcbff4909a98f921260af13b793aa2fa22796",
+      "assets/index-BeAi2dgl.js": "9ff6ee6d402055832dc7c9d1fe888b8433fa34c1b72e37ca9a038cd8cc9e9606",
+      "assets/index-BhKbTZ_K.js": "b242573c17656ab0de94743552d316b3dfea72845985368c7aeee65b69712021",
+      "assets/index-Bpc3D8Fr.js": "b6f245786070e26f10287fd4b9d8b8cc4d5db613cb2957b67546b7c3705798b8",
+      "assets/index-CfUrUiHi.js": "803dd93b440a85acd76d26d4b912c10c09538a944e4679ceb1b03fc043144fef",
+      "assets/index-D8MmPk1r.js": "a4ca0de24604da11a7e7478db0c3a24701aa61f681471ec44d769b37db5fd768",
+      "assets/index-DTbptTNP.js": "00ca6f5d8fe4425d4588c2013ad6b6d50c23c821c8a0799fda8f2f8ac419741c",
+      "assets/index-Ivj6Yv4W.js": "c010f47355e4bcd3a9ac8fb2b2b59b2e189c8cec5ec08d901f0a34a89093bbae",
+      "assets/index-UpOli4TK.js": "03e5b96dea4412a8bfa6d3c21f2e44afa1e81ef7c9eda7bb4c35bb126f805180",
+      "assets/LockOutlined-CXiKm9-l.js": "340499e98fdfd7c9401f88b3bf49747543fb25f40e75e826a0600a489e6d0262",
+      "assets/network-C3T3fINR.js": "b5f0008b18d672472627597d3556a3f0997d3151f666110a9752d4792d210545",
+      "assets/Skeleton-K9VulWB2.js": "f03e3d9f0b6d5a95f09df68c77595ae798f934c4eab1a48e9a0c2fbab0921a14",
+      "assets/UserOutlined-myX5kES1.js": "5bbd8bcfc72b364c343cf337addef115a92aa9a833f46af69c07e99f789ae5d7"
+    }
+  },
+  "payload_sha256": {
+    "payload/mic-lease.sh": "9089fb10baa4945b9657881d40cfcfd732fbc6527f9cec30f96a3b0e74b5248d",
+    "payload/mic_lease.py": "e171afaec3618859db98570a0be9878bb12729b970a6f756af2b54d2d8c4508c",
+    "payload/nanokvm-mic-lease.service": "5c9adf8338710e5f1add29b5b0005ffca5294f60155f4cbace9d932dd107a674",
+    "payload/web/assets/auth-BowKsku--mic20261015.js": "949be3006cd4bd9e68f4573df31e7ced2b89d3f2a555e371a97a2b141e94a190",
+    "payload/web/assets/direct.worker-_50jbC9e-mic20261015.js": "c2fada1998e8e1160aade043a0b013f23b21707402297fc108abb9ed9cb87c5f",
+    "payload/web/assets/head-BTGMInA4-mic20261015.js": "c4b817c8cdd622074a40f70cea1f69de603c1918b8225b54e1d825555a08ab0b",
+    "payload/web/assets/index-BeAi2dgl-mic20261015.js": "1e98416e09f759ff653af0b4073e7768db58bec2bb97bf3ec25fc6a742319f98",
+    "payload/web/assets/index-BhKbTZ_K-mic20261015.js": "f0288a8f8a10a9b24372b64bae763a9623334a7dee51e5da329582f4c635e9c2",
+    "payload/web/assets/index-Bpc3D8Fr-mic20261015.js": "9ad6c2608d6cf1030024959c0d12da5c1e3f94e1a957330f3a137bee4a3a7957",
+    "payload/web/assets/index-CfUrUiHi-mic20261015.js": "87865d75fdba3786b24d96dcbb27bd1c8d5ab4bee8f4931a7e169c21e5084a00",
+    "payload/web/assets/index-D8MmPk1r-mic20261015.js": "4801c18021b9cb36ecdcef4eafda60353756807fd1ea02f86fa366b42ce06f67",
+    "payload/web/assets/index-DTbptTNP-mic20261015.js": "6a468d4e0e5f1664895fddc2f9bc2b2b7b2a3681a5a21a9bdcd796cc3219f44b",
+    "payload/web/assets/index-Ivj6Yv4W-mic20261015.js": "64afec2aa7cbfced91ce99e47c90ebefe33bb75f0ce117e8d2ea6eb6d6d54fc9",
+    "payload/web/assets/index-UpOli4TK-mic20261015.js": "84dd7ec8d1dd0444c2b20c42a973e57b6fa02804206b559b3d70e822575c1cc2",
+    "payload/web/assets/LockOutlined-CXiKm9-l-mic20261015.js": "bc214e6f46cc73acd971cae6a4d2474ea8935105a67b58dff10f66a864ebcc8f",
+    "payload/web/assets/mic-lease.mjs": "7b8d8050892dcbd026944487e39f457a52689e473ffaa7f320191b6e754a62bd",
+    "payload/web/assets/mic-react-20261015.mjs": "6e4d0241d29a398648d05c2902465bb29beb942498a2b7a7c2cf0aec96398e40",
+    "payload/web/assets/network-C3T3fINR-mic20261015.js": "51cb177fcf013caf2f796b1f0553dc45356e45a3e9b6a9d88cd68535a89541aa",
+    "payload/web/assets/Skeleton-K9VulWB2-mic20261015.js": "60b3bb8c19ae3d54c8590ca1c6c3f025866ac93ba5fedf97713057afcdd2640c",
+    "payload/web/assets/UserOutlined-myX5kES1-mic20261015.js": "22b54e4b4a4bbe681731389c228ec7a8899ca67f386fcfe584f79cfabcab1300",
+    "payload/web/index.html": "353dced986e359c5d4161f652f0d6ec64158c720d54ef9cefb258e718bfa8f18"
+  }
+}

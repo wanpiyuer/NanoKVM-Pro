@@ -1,5 +1,8 @@
 # NanoKVM-Pro
 
+> 此分支包含 NanoKVM Pro 1.2.15 麦克风端子联动、Windows 图形安装器及离线测试。详见 [中文源码说明](customizations/mic-jack/README.zh-CN.md)。
+
+
 > ## Code Availability
 >
 > - [x] **Frontend** (Released)

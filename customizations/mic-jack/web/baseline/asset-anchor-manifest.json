@@ -1,0 +1,375 @@
+{
+  "status": "READ_ONLY_ANCHOR_INVENTORY_NOT_A_PATCH",
+  "no_js_executed": true,
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 456,
+      "sha256": "ffb6906ff66b5ae1558980b4bafb1f8231284eb69c7fe37cbe27d7e91ddf56ec"
+    },
+    {
+      "path": "assets/index-D8MmPk1r.js",
+      "bytes": 603639,
+      "sha256": "a4ca0de24604da11a7e7478db0c3a24701aa61f681471ec44d769b37db5fd768"
+    },
+    {
+      "path": "assets/index-Bpc3D8Fr.js",
+      "bytes": 924182,
+      "sha256": "b6f245786070e26f10287fd4b9d8b8cc4d5db613cb2957b67546b7c3705798b8"
+    }
+  ],
+  "getUserMedia_occurrences_in_desktop_chunk": 2,
+  "all_anchor_counts_checked": true,
+  "anchors": [
+    {
+      "label": "h264_component",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 735115,
+          "byte_end_exclusive": 739389,
+          "line_1_based": 512,
+          "byte_column_1_based": 152153
+        }
+      ],
+      "needle_bytes": 4274,
+      "needle_sha256": "14d6ade5e27ed8847d4865f14a9fbbbb348de35f8a5ad975ca5802b07df4273d",
+      "exact_text": "b7=()=>{const e=Pt(mn),t=Pt(_r),n=Xt($h),[r,a]=Ct(ac),[o,c]=Ct(oi),[u,d]=i.useState(!0),[h,f]=i.useState(!0),m=i.useRef(null),p=i.useRef(null),v=i.useRef(!1),k=i.useRef(!1),y=i.useRef([]),C=i.useRef([]),E=i.useRef(null),S=i.useRef(null),$=i.useRef(null),w=i.useRef(null);return i.useEffect(()=>{const M=HE(),A=[{urls:[\"stun:stun.l.google.com:19302\"]}],R=new RTCPeerConnection({iceServers:A}),O=new RTCPeerConnection({iceServers:A}),L=gf(R,v,y,\"video\"),H=gf(O,k,C,\"audio\"),_=vf(R,y,\"video\"),q=vf(O,C,\"audio\"),J=G=>{switch(G){case 1:n(mr.Normal),d(!0);break;case-1:n(mr.NoImage),d(!1);break;case-4:n(mr.InconsistentVideoMode),d(!1);break;default:console.log(\"Unhandled video status:\",G);break}},X=(G,te)=>{if(M.readyState===WebSocket.OPEN)try{const ae={event:G,data:te};M.send(JSON.stringify(ae))}catch(ae){console.error(\"Error sending event:\",ae)}};R.onnegotiationneeded=async()=>{if(v.current||R.signalingState!==\"stable\"){console.log(\"Skipping video negotiation - Waiting for answer or state unstable\");return}try{v.current=!0;const G=await R.createOffer({offerToReceiveVideo:!0,offerToReceiveAudio:!1});await R.setLocalDescription(G),X(\"video-offer\",JSON.stringify(R.localDescription))}catch(G){v.current=!1,console.error(\"Video negotiation failed:\",G)}},R.onconnectionstatechange=()=>{R.iceConnectionState===\"connected\"&&f(!1)},R.ontrack=G=>{m.current&&G.track.kind===\"video\"&&(m.current.srcObject=new MediaStream([G.track]))},O.onnegotiationneeded=async()=>{if(k.current||O.signalingState!==\"stable\"){console.log(\"Skipping audio negotiation - Waiting for answer or state unstable\");return}try{k.current=!0;const G=await O.createOffer({offerToReceiveVideo:!1,offerToReceiveAudio:!0});await O.setLocalDescription(G),X(\"audio-offer\",JSON.stringify(O.localDescription))}catch(G){k.current=!1,console.error(\"Audio negotiation failed:\",G)}},O.ontrack=G=>{p.current&&G.track.kind===\"audio\"&&(p.current.srcObject=new MediaStream([G.track]))},M.onopen=()=>{v.current=!1,k.current=!1,R.onicecandidate=G=>{G.candidate&&X(\"video-candidate\",JSON.stringify(G.candidate))},O.onicecandidate=G=>{G.candidate&&X(\"audio-candidate\",JSON.stringify(G.candidate))},R.addTransceiver(\"video\",{direction:\"recvonly\"}),O.addTransceiver(\"audio\",{direction:\"sendrecv\"}),E.current=O},M.onmessage=G=>{try{const te=JSON.parse(G.data);if(!(te!=null&&te.data))return;const ae=JSON.parse(te.data);if(!ae)return;switch(te.event){case\"video-answer\":L(ae);break;case\"video-candidate\":_(ae);break;case\"audio-answer\":H(ae);break;case\"audio-candidate\":q(ae);break;case\"video-status\":J(Number(ae));break;case\"heartbeat\":break;default:console.log(\"Unhandled event:\",te.event)}}catch(te){console.error(\"Message processing error:\",te)}};const V=setInterval(()=>{X(\"heartbeat\",\"\")},60*1e3),Q=setTimeout(()=>{f(!1)},10*1e3);return()=>{M.readyState===WebSocket.OPEN&&M.close(),R.close(),O.close(),v.current=!1,k.current=!1,a(0),clearInterval(V),clearTimeout(Q),$.current&&($.current.getTracks().forEach(G=>G.stop()),$.current=null),S.current=null,w.current=null}},[]),i.useEffect(()=>{const M=p.current;M&&(r>0&&(M.paused&&M.play().catch(console.error),M.muted&&(M.muted=!1)),M.volume=r/100)},[r]),i.useEffect(()=>{const M=E.current;if(!M)return;o?(async()=>{try{const O=await navigator.mediaDevices.getUserMedia({audio:{sampleRate:48e3,channelCount:2,echoCancellation:!0,noiseSuppression:!0,autoGainControl:!0}});$.current=O;const L=O.getAudioTracks()[0];w.current=L,S.current=M.addTrack(L,O)}catch(O){console.error(\"Failed to get microphone:\",O),c(!1)}})():(()=>{if(S.current){try{M.removeTrack(S.current)}catch(O){console.error(\"Failed to remove track:\",O)}S.current=null}w.current=null,$.current&&($.current.getTracks().forEach(O=>O.stop()),$.current=null)})()},[o,c]),s.jsx(la,{size:\"large\",tip:\"Loading\",spinning:h,children:s.jsxs(\"div\",{className:\"flex h-screen w-screen items-start justify-center xl:items-center\",children:[s.jsx(\"video\",{id:\"screen\",ref:m,className:vt(\"block max-h-full min-h-[50vh] min-w-[50vw] max-w-full select-none object-scale-down\",u?\"opacity-100\":\"opacity-0\",t),style:{transform:`scale(${e.scale})`},muted:!0,autoPlay:!0,playsInline:!0,controls:!1,onPlaying:()=>f(!1),onClick:M=>{M.stopPropagation(),M.preventDefault()}}),s.jsx(\"audio\",{ref:p,muted:!0,autoPlay:!0,playsInline:!0})]})})}"
+    },
+    {
+      "label": "h264_mic_effect_replace_whole",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 738268,
+          "byte_end_exclusive": 738842,
+          "line_1_based": 512,
+          "byte_column_1_based": 155306
+        }
+      ],
+      "needle_bytes": 574,
+      "needle_sha256": "db7d798ab90fc33ed15679e2c6b63ce6f59a1bcdffe7164a6b2e259d1bd413dd",
+      "exact_text": "i.useEffect(()=>{const M=E.current;if(!M)return;o?(async()=>{try{const O=await navigator.mediaDevices.getUserMedia({audio:{sampleRate:48e3,channelCount:2,echoCancellation:!0,noiseSuppression:!0,autoGainControl:!0}});$.current=O;const L=O.getAudioTracks()[0];w.current=L,S.current=M.addTrack(L,O)}catch(O){console.error(\"Failed to get microphone:\",O),c(!1)}})():(()=>{if(S.current){try{M.removeTrack(S.current)}catch(O){console.error(\"Failed to remove track:\",O)}S.current=null}w.current=null,$.current&&($.current.getTracks().forEach(O=>O.stop()),$.current=null)})()},[o,c])"
+    },
+    {
+      "label": "h265_component",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 740848,
+          "byte_end_exclusive": 745026,
+          "line_1_based": 512,
+          "byte_column_1_based": 157886
+        }
+      ],
+      "needle_bytes": 4178,
+      "needle_sha256": "196500f0f26f461e253c22de0d68e8b223a5c95a339584d34946b387e574b975",
+      "exact_text": "w7=()=>{const e=Pt(mn),t=Pt(_r),[n,r]=Ct(ac),[a,o]=Ct(oi),[c,u]=i.useState(!0),d=i.useRef(null),h=i.useRef(null),f=i.useRef(!1),m=i.useRef(!1),p=i.useRef([]),v=i.useRef([]),k=i.useRef(null),y=i.useRef(null),C=i.useRef(null),E=i.useRef(null);return i.useEffect(()=>{const S=KE(),$=[{urls:[\"stun:stun.l.google.com:19302\"]}],w=new RTCPeerConnection({iceServers:$}),M=new RTCPeerConnection({iceServers:$}),A=yf(w,f,p,\"video\"),R=yf(M,m,v,\"audio\"),O=bf(w,p,\"video\"),L=bf(M,v,\"audio\"),H=(J,X)=>{if(S.readyState===WebSocket.OPEN)try{const V={event:J,data:X};S.send(JSON.stringify(V))}catch(V){console.error(\"Error sending event:\",V)}};w.onnegotiationneeded=async()=>{if(f.current||w.signalingState!==\"stable\"){console.log(\"Skipping video negotiation - Waiting for answer or state unstable\");return}try{f.current=!0;const J=await w.createOffer({offerToReceiveVideo:!0,offerToReceiveAudio:!1});await w.setLocalDescription(J),H(\"video-offer\",JSON.stringify(w.localDescription))}catch(J){f.current=!1,console.error(\"Video negotiation failed:\",J)}},w.onconnectionstatechange=()=>{w.iceConnectionState===\"connected\"&&u(!1)},w.ontrack=J=>{d.current&&J.track.kind===\"video\"&&(d.current.srcObject=new MediaStream([J.track]))},M.onnegotiationneeded=async()=>{if(m.current||M.signalingState!==\"stable\"){console.log(\"Skipping audio negotiation - Waiting for answer or state unstable\");return}try{m.current=!0;const J=await M.createOffer({offerToReceiveVideo:!1,offerToReceiveAudio:!0});await M.setLocalDescription(J),H(\"audio-offer\",JSON.stringify(M.localDescription))}catch(J){m.current=!1,console.error(\"Audio negotiation failed:\",J)}},M.ontrack=J=>{h.current&&J.track.kind===\"audio\"&&(h.current.srcObject=new MediaStream([J.track]))},S.onopen=()=>{f.current=!1,m.current=!1,w.onicecandidate=V=>{V.candidate&&H(\"video-candidate\",JSON.stringify(V.candidate))},M.onicecandidate=V=>{V.candidate&&H(\"audio-candidate\",JSON.stringify(V.candidate))};const J=w.addTransceiver(\"video\",{direction:\"recvonly\"}),X=RTCRtpReceiver.getCapabilities(\"video\");if(X&&X.codecs){const V=X.codecs.find(Q=>Q.mimeType===\"video/H265\");V?J.setCodecPreferences([V]):console.warn(\"H.265 codec not supported by this browser.\")}M.addTransceiver(\"audio\",{direction:\"sendrecv\"}),k.current=M},S.onmessage=J=>{try{const X=JSON.parse(J.data);if(!(X!=null&&X.data))return;const V=JSON.parse(X.data);if(!V)return;switch(X.event){case\"video-answer\":A(V);break;case\"video-candidate\":O(V);break;case\"audio-answer\":R(V);break;case\"audio-candidate\":L(V);break;case\"heartbeat\":break;default:console.log(\"Unhandled event:\",X.event)}}catch(X){console.error(\"Message processing error:\",X)}};const _=setInterval(()=>{H(\"heartbeat\",\"\")},60*1e3),q=setTimeout(()=>{u(!1)},10*1e3);return()=>{S.readyState===WebSocket.OPEN&&S.close(),w.close(),M.close(),f.current=!1,m.current=!1,r(0),clearInterval(_),clearTimeout(q),C.current&&(C.current.getTracks().forEach(J=>J.stop()),C.current=null),y.current=null,E.current=null}},[]),i.useEffect(()=>{const S=h.current;S&&(n>0&&(S.paused&&S.play().catch(console.error),S.muted&&(S.muted=!1)),S.volume=n/100)},[n]),i.useEffect(()=>{const S=k.current;if(!S)return;a?(async()=>{try{const M=await navigator.mediaDevices.getUserMedia({audio:{sampleRate:48e3,channelCount:2,echoCancellation:!0,noiseSuppression:!0,autoGainControl:!0}});C.current=M;const A=M.getAudioTracks()[0];E.current=A,y.current=S.addTrack(A,M)}catch(M){console.error(\"Failed to get microphone:\",M),o(!1)}})():(()=>{if(y.current){try{S.removeTrack(y.current)}catch(M){console.error(\"Failed to remove track:\",M)}y.current=null}E.current=null,C.current&&(C.current.getTracks().forEach(M=>M.stop()),C.current=null)})()},[a,o]),s.jsx(la,{size:\"large\",tip:\"Loading\",spinning:c,children:s.jsxs(\"div\",{className:\"flex h-screen w-screen items-start justify-center xl:items-center\",children:[s.jsx(\"video\",{id:\"screen\",ref:d,className:vt(\"block max-h-full min-h-[50vh] min-w-[50vw] max-w-full select-none object-scale-down\",t),style:{transform:`scale(${e.scale})`},muted:!0,autoPlay:!0,playsInline:!0,controls:!1,onPlaying:()=>u(!1),onClick:S=>{S.stopPropagation(),S.preventDefault()}}),s.jsx(\"audio\",{ref:h,muted:!0,autoPlay:!0,playsInline:!0})]})})}"
+    },
+    {
+      "label": "h265_mic_effect_replace_whole",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 743933,
+          "byte_end_exclusive": 744507,
+          "line_1_based": 512,
+          "byte_column_1_based": 160971
+        }
+      ],
+      "needle_bytes": 574,
+      "needle_sha256": "12dc349f3a3c4af1ec4775efca8f039ca796462afd3c1a5cf9cc84c403b5191e",
+      "exact_text": "i.useEffect(()=>{const S=k.current;if(!S)return;a?(async()=>{try{const M=await navigator.mediaDevices.getUserMedia({audio:{sampleRate:48e3,channelCount:2,echoCancellation:!0,noiseSuppression:!0,autoGainControl:!0}});C.current=M;const A=M.getAudioTracks()[0];E.current=A,y.current=S.addTrack(A,M)}catch(M){console.error(\"Failed to get microphone:\",M),o(!1)}})():(()=>{if(y.current){try{S.removeTrack(y.current)}catch(M){console.error(\"Failed to remove track:\",M)}y.current=null}E.current=null,C.current&&(C.current.getTracks().forEach(M=>M.stop()),C.current=null)})()},[a,o])"
+    },
+    {
+      "label": "h264_ref_declaration_tail",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 735318,
+          "byte_end_exclusive": 735422,
+          "line_1_based": 512,
+          "byte_column_1_based": 152356
+        }
+      ],
+      "needle_bytes": 104,
+      "needle_sha256": "5e7b24e967854a57c2ebf92dd55ea59b082bdd61c96efb494e334a0a3a2906ba",
+      "exact_text": "E=i.useRef(null),S=i.useRef(null),$=i.useRef(null),w=i.useRef(null);return i.useEffect(()=>{const M=HE()"
+    },
+    {
+      "label": "h265_ref_declaration_tail",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 741021,
+          "byte_end_exclusive": 741125,
+          "line_1_based": 512,
+          "byte_column_1_based": 158059
+        }
+      ],
+      "needle_bytes": 104,
+      "needle_sha256": "1081bd6cf6278a70f4de170190d4046c4203e553310079846ca04a72fba22ead",
+      "exact_text": "k=i.useRef(null),y=i.useRef(null),C=i.useRef(null),E=i.useRef(null);return i.useEffect(()=>{const S=KE()"
+    },
+    {
+      "label": "h264_ws_open_ready_tail",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 737261,
+          "byte_end_exclusive": 737370,
+          "line_1_based": 512,
+          "byte_column_1_based": 154299
+        }
+      ],
+      "needle_bytes": 109,
+      "needle_sha256": "0391cff6d81a571a7d5e1585577f220da1da95f3fb5298cc371cbbefedd63ec7",
+      "exact_text": "R.addTransceiver(\"video\",{direction:\"recvonly\"}),O.addTransceiver(\"audio\",{direction:\"sendrecv\"}),E.current=O"
+    },
+    {
+      "label": "h265_ws_open_ready_tail",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 743028,
+          "byte_end_exclusive": 743088,
+          "line_1_based": 512,
+          "byte_column_1_based": 160066
+        }
+      ],
+      "needle_bytes": 60,
+      "needle_sha256": "d90d3b715a855b945aedb78d97485753709d05faa9965137a143fb7cfe04a06e",
+      "exact_text": "M.addTransceiver(\"audio\",{direction:\"sendrecv\"}),k.current=M"
+    },
+    {
+      "label": "h264_cleanup_prefix",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 737895,
+          "byte_end_exclusive": 737997,
+          "line_1_based": 512,
+          "byte_column_1_based": 154933
+        }
+      ],
+      "needle_bytes": 102,
+      "needle_sha256": "da97e0295822f8061c36d840213b7f07d79e1b6f502c8f906bee3c3d69b16daf",
+      "exact_text": "return()=>{M.readyState===WebSocket.OPEN&&M.close(),R.close(),O.close(),v.current=!1,k.current=!1,a(0)"
+    },
+    {
+      "label": "h265_cleanup_prefix",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 743560,
+          "byte_end_exclusive": 743662,
+          "line_1_based": 512,
+          "byte_column_1_based": 160598
+        }
+      ],
+      "needle_bytes": 102,
+      "needle_sha256": "2086c15d0be01f268d99dee6756b9f49fa45030c96d8d7978dce39385c34794b",
+      "exact_text": "return()=>{S.readyState===WebSocket.OPEN&&S.close(),w.close(),M.close(),f.current=!1,m.current=!1,r(0)"
+    },
+    {
+      "label": "h264_existing_mic_cleanup",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 738031,
+          "byte_end_exclusive": 738131,
+          "line_1_based": 512,
+          "byte_column_1_based": 155069
+        }
+      ],
+      "needle_bytes": 100,
+      "needle_sha256": "b27b19fda3a16f9bdbf97f963579fdff7fbf72111d46b74418dc96a4aaff8d76",
+      "exact_text": "$.current&&($.current.getTracks().forEach(G=>G.stop()),$.current=null),S.current=null,w.current=null"
+    },
+    {
+      "label": "h265_existing_mic_cleanup",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 743696,
+          "byte_end_exclusive": 743796,
+          "line_1_based": 512,
+          "byte_column_1_based": 160734
+        }
+      ],
+      "needle_bytes": 100,
+      "needle_sha256": "076f708e439d328dc5c7ec680c00b99b57573737f6d2b11743afbde89e1fc547",
+      "exact_text": "C.current&&(C.current.getTracks().forEach(J=>J.stop()),C.current=null),y.current=null,E.current=null"
+    },
+    {
+      "label": "h264_message_parser_prefix",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 737372,
+          "byte_end_exclusive": 737511,
+          "line_1_based": 512,
+          "byte_column_1_based": 154410
+        }
+      ],
+      "needle_bytes": 139,
+      "needle_sha256": "fcd2d923f237ec3bcdd80b7f67774f99b8aee7b4787eadcd141af8ca1ca6ccc0",
+      "exact_text": "M.onmessage=G=>{try{const te=JSON.parse(G.data);if(!(te!=null&&te.data))return;const ae=JSON.parse(te.data);if(!ae)return;switch(te.event){"
+    },
+    {
+      "label": "h265_message_parser_prefix",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 743090,
+          "byte_end_exclusive": 743222,
+          "line_1_based": 512,
+          "byte_column_1_based": 160128
+        }
+      ],
+      "needle_bytes": 132,
+      "needle_sha256": "58e99bfc9bcd7002c9acc4c9c1b2bd88d7180b76e5ddf5b59b32943dbf9f6967",
+      "exact_text": "S.onmessage=J=>{try{const X=JSON.parse(J.data);if(!(X!=null&&X.data))return;const V=JSON.parse(X.data);if(!V)return;switch(X.event){"
+    },
+    {
+      "label": "toolbar_atom_and_toggle",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 469043,
+          "byte_end_exclusive": 469265,
+          "line_1_based": 507,
+          "byte_column_1_based": 44360
+        }
+      ],
+      "needle_bytes": 222,
+      "needle_sha256": "65cd481ea44264aaa5c1c488954542e5b1b805fc983a2405d9f55c6623c55940",
+      "exact_text": "oi=kn(!1),NE=()=>{const{t:e}=Ie(),[t,n]=Ct(oi),[r,a]=i.useState(!1),[o,c]=i.useState(!1),u=async()=>{if(t){n(!1);return}try{const f=await uc();f.code===0&&f.data&&(f.data.isMicEnabled?n(!0):a(!0))}catch(f){console.log(f)}}"
+    },
+    {
+      "label": "existing_script_api_transport",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 494175,
+          "byte_end_exclusive": 494245,
+          "line_1_based": 507,
+          "byte_column_1_based": 69492
+        }
+      ],
+      "needle_bytes": 70,
+      "needle_sha256": "c9aa00df60f07de197d0e277b830f33f00d9557661d359c214eb013ca91612cd",
+      "exact_text": "function g0(e,t){return lt.post(\"/api/vm/script/run\",{name:e,type:t})}"
+    },
+    {
+      "label": "h264_websocket_factory",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 481257,
+          "byte_end_exclusive": 481308,
+          "line_1_based": 507,
+          "byte_column_1_based": 56574
+        }
+      ],
+      "needle_bytes": 51,
+      "needle_sha256": "64e8817f7815c7b3a599006debb26c5562d671bb7e4fed85dedacbb5bc9e66d5",
+      "exact_text": "function HE(){return li(\"/api/stream/h264/webrtc\")}"
+    },
+    {
+      "label": "h265_websocket_factory",
+      "file": "assets/index-Bpc3D8Fr.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 481359,
+          "byte_end_exclusive": 481410,
+          "line_1_based": 507,
+          "byte_column_1_based": 56676
+        }
+      ],
+      "needle_bytes": 51,
+      "needle_sha256": "de37cb9e74e0fb51ef7caa9b8b548a6fae21e00dde29734a26c6c2aa75e18f9c",
+      "exact_text": "function KE(){return li(\"/api/stream/h265/webrtc\")}"
+    },
+    {
+      "label": "entry_desktop_dependency_filename",
+      "file": "assets/index-D8MmPk1r.js",
+      "expected_occurrences": 2,
+      "positions": [
+        {
+          "byte_offset_0_based": 296,
+          "byte_end_exclusive": 313,
+          "line_1_based": 1,
+          "byte_column_1_based": 297
+        },
+        {
+          "byte_offset_0_based": 372006,
+          "byte_end_exclusive": 372023,
+          "line_1_based": 181,
+          "byte_column_1_based": 13467
+        }
+      ],
+      "needle_bytes": 17,
+      "needle_sha256": "a59b2298589209f1be7ac019c3f3c9a562762c9baf284eefbfc24c91a2ec269a",
+      "exact_text": "index-Bpc3D8Fr.js"
+    },
+    {
+      "label": "entry_desktop_dynamic_import",
+      "file": "assets/index-D8MmPk1r.js",
+      "expected_occurrences": 1,
+      "positions": [
+        {
+          "byte_offset_0_based": 371996,
+          "byte_end_exclusive": 372025,
+          "line_1_based": 181,
+          "byte_column_1_based": 13457
+        }
+      ],
+      "needle_bytes": 29,
+      "needle_sha256": "af064618e792a4ea9966ecb9e5198aa20c5028d2e4fe2db4c5dfd0f7f8c435e0",
+      "exact_text": "import(\"./index-Bpc3D8Fr.js\")"
+    }
+  ],
+  "h264_aliases": {
+    "component": "b7",
+    "desired": "o",
+    "setDesired": "c",
+    "audioConnectionRef": "E",
+    "senderRef": "S",
+    "streamRef": "$",
+    "trackRef": "w",
+    "websocket": "M",
+    "audioPeer": "O",
+    "sendMessage": "X"
+  },
+  "h265_aliases": {
+    "component": "w7",
+    "desired": "a",
+    "setDesired": "o",
+    "audioConnectionRef": "k",
+    "senderRef": "y",
+    "streamRef": "C",
+    "trackRef": "E",
+    "websocket": "S",
+    "audioPeer": "M",
+    "sendMessage": "H"
+  }
+}
